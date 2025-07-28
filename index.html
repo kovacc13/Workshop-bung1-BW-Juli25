@@ -6,6 +6,8 @@
     <title>Interaktive Übung: KI-SWOT-Analyse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kDXrdEMJqzUMLcAoទឹកiIA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" xintegrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -46,11 +48,9 @@
             <p class="text-slate-600 mt-2">Reflektieren Sie die Auswirkungen von KI auf Ihren Bereich.</p>
         </header>
 
-        <!-- Ablauf Section -->
         <div id="ablauf" class="mb-8 bg-white rounded-xl shadow-md p-6">
             <h2 class="text-2xl font-bold text-slate-800 mb-4">Ablauf der Übung (20 Minuten)</h2>
             <div id="accordionContainer" class="space-y-2">
-                <!-- Step 1-4 Accordions here -->
                 <div class="border rounded-lg overflow-hidden">
                     <button class="accordion-header w-full text-left p-4 bg-slate-50 hover:bg-slate-200 transition font-semibold flex justify-between items-center">
                         <span>Schritt 1: Gruppenbildung (1 Min)</span>
@@ -76,7 +76,6 @@
                     </button>
                     <div class="accordion-content bg-white">
                         <p>Diskutieren Sie in der Gruppe und tragen Sie Ihre Ideen in die entsprechenden Felder ein. **Wählen Sie anschließend Ihre wichtigste Chance aus**, indem Sie auf den Stern (☆) klicken, um sie als Top-Chance zu markieren (⭐).</p>
-                        <!-- Timer -->
                         <div class="mt-4 p-4 bg-slate-100 rounded-lg text-center">
                             <div id="timerDisplay" class="text-4xl font-bold text-slate-800">12:00</div>
                             <div class="flex justify-center gap-4 mt-2">
@@ -99,16 +98,13 @@
             </div>
         </div>
         
-        <!-- Presentation Button -->
         <div class="text-center mb-8">
             <button id="startPresentationBtn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition-all transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:transform-none" disabled>
                 Präsentation starten
             </button>
         </div>
 
-        <!-- SWOT Board -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Strengths -->
             <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg p-4 shadow-sm">
                 <h3 class="text-xl font-bold text-emerald-800">Stärken (Strengths)</h3>
                 <p class="text-sm text-emerald-700 mb-3">Welche unserer bestehenden Stärken werden durch KI noch wertvoller?</p>
@@ -116,7 +112,6 @@
                 <button onclick="addSwotItem('strengths')" class="mt-2 w-full bg-emerald-600 text-white p-2 rounded-lg font-semibold hover:bg-emerald-700 transition">Hinzufügen</button>
                 <div id="strengths-list" class="mt-4 space-y-2"></div>
             </div>
-            <!-- Weaknesses -->
             <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-4 shadow-sm">
                 <h3 class="text-xl font-bold text-amber-800">Schwächen (Weaknesses)</h3>
                 <p class="text-sm text-amber-700 mb-3">Wo sind wir durch die KI-Entwicklung verwundbar?</p>
@@ -124,7 +119,6 @@
                 <button onclick="addSwotItem('weaknesses')" class="mt-2 w-full bg-amber-600 text-white p-2 rounded-lg font-semibold hover:bg-amber-700 transition">Hinzufügen</button>
                 <div id="weaknesses-list" class="mt-4 space-y-2"></div>
             </div>
-            <!-- Opportunities -->
             <div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg p-4 shadow-sm">
                 <h3 class="text-xl font-bold text-indigo-800">Chancen (Opportunities)</h3>
                 <p class="text-sm text-indigo-700 mb-3">Welche völlig neuen Chancen ergeben sich für unser Geschäftsmodell?</p>
@@ -132,7 +126,6 @@
                 <button onclick="addSwotItem('opportunities')" class="mt-2 w-full bg-indigo-600 text-white p-2 rounded-lg font-semibold hover:bg-indigo-700 transition">Hinzufügen</button>
                 <div id="opportunities-list" class="mt-4 space-y-2"></div>
             </div>
-            <!-- Threats -->
             <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4 shadow-sm">
                 <h3 class="text-xl font-bold text-red-800">Risiken (Threats)</h3>
                 <p class="text-sm text-red-700 mb-3">Was sind die größten Gefahren, wenn wir nicht handeln?</p>
@@ -143,14 +136,18 @@
         </div>
     </div>
 
-    <!-- Presentation Modal -->
     <div id="presentationModal" class="presentation-modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <header class="p-4 border-b flex justify-between items-center">
+            <header class="p-4 border-b flex justify-between items-center gap-4">
                 <h2 class="text-2xl font-bold text-slate-800">Präsentations-Chart</h2>
-                <button id="closePresentationBtn" class="text-slate-500 hover:text-slate-800 text-3xl leading-none">&times;</button>
+                <div class="flex items-center gap-2">
+                    <button id="downloadPdfBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition disabled:bg-green-300">
+                        Als PDF herunterladen
+                    </button>
+                    <button id="closePresentationBtn" class="text-slate-500 hover:text-slate-800 text-3xl leading-none">&times;</button>
+                </div>
             </header>
-            <main class="p-6 overflow-y-auto">
+            <main class="p-6 overflow-y-auto" id="presentation-content">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div id="presentation-strengths"></div>
                     <div id="presentation-weaknesses"></div>
@@ -255,6 +252,7 @@
     const startBtn = document.getElementById('startPresentationBtn');
     const closeBtn = document.getElementById('closePresentationBtn');
     const modal = document.getElementById('presentationModal');
+    const downloadBtn = document.getElementById('downloadPdfBtn');
 
     startBtn.addEventListener('click', () => {
         renderPresentationChart();
@@ -309,6 +307,62 @@
             container.appendChild(list);
         }
     }
+
+    // --- PDF Download Logic ---
+    async function downloadPdf() {
+        const downloadButton = document.getElementById('downloadPdfBtn');
+        const originalButtonText = downloadButton.innerHTML;
+        downloadButton.innerHTML = 'Wird erstellt...';
+        downloadButton.disabled = true;
+    
+        const { jsPDF } = window.jspdf;
+        const contentToCapture = document.getElementById('presentation-content');
+    
+        try {
+            const canvas = await html2canvas(contentToCapture, { 
+                scale: 2, // Higher scale for better resolution
+                backgroundColor: '#ffffff', // Ensure background is not transparent
+                useCORS: true 
+            });
+            
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            const ratio = canvasWidth / canvasHeight;
+
+            let imgWidth = pdfWidth - 20; // A4 width with 10mm margin on each side
+            let imgHeight = imgWidth / ratio;
+            
+            // If height is too big for the page, scale by height instead
+            if (imgHeight > pdfHeight - 20) {
+                imgHeight = pdfHeight - 20;
+                imgWidth = imgHeight * ratio;
+            }
+
+            const x = (pdfWidth - imgWidth) / 2; // Center horizontally
+            const y = 10; // 10mm margin from top
+
+            pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+            pdf.save('KI-SWOT-Analyse.pdf');
+
+        } catch (error) {
+            console.error("PDF-Erstellung fehlgeschlagen:", error);
+            alert("Entschuldigung, das PDF konnte nicht erstellt werden.");
+        } finally {
+            downloadButton.innerHTML = originalButtonText;
+            downloadButton.disabled = false;
+        }
+    }
+
+    downloadBtn.addEventListener('click', downloadPdf);
 
 
     // --- Timer Logic ---

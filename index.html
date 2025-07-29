@@ -3,458 +3,599 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interaktive Übung: KI-SWOT-Analyse</title>
+    <title>Dein KI-Kompass Workshop</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- PDF Generation Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kDXrdEMJqzUMLcAoទឹកiIA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" xintegrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- jsPDF Libraries for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
-            padding: 0 1.5rem;
+        .task-item {
+            cursor: grab;
+            transition: background-color 0.2s;
         }
-        .accordion-content.open {
-            max-height: 500px; /* Adjust as needed */
-            padding: 1rem 1.5rem;
+        .task-item:active {
+            cursor: grabbing;
         }
-        .swot-card {
-            animation: fadeIn 0.5s ease-in-out;
+        .drop-zone {
+            transition: background-color 0.2s, border-color 0.2s;
+            border: 2px dashed transparent;
+            min-height: 100px;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .drag-over {
+            background-color: #e0f2fe; /* light blue */
+            border-color: #38bdf8; /* sky blue */
         }
-        .presentation-modal {
-            transition: opacity 0.3s ease-in-out;
+        .step-content {
+            display: none;
         }
-        .key-opportunity {
-            box-shadow: 0 0 0 3px #fbbf24; /* amber-400 */
-            transform: scale(1.03);
+        .step-content.active {
+            display: block;
+        }
+        .task-in-matrix {
+            transform: scale(0.9);
+            width: 100%;
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800">
+<body class="bg-slate-50 text-slate-800">
 
-    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-        
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <!-- Header -->
         <header class="text-center mb-8">
-            <img src="https://i.imgur.com/PKXYVWW.png" alt="Workshop Logo" class="h-12 mx-auto mb-4" onerror="this.style.display='none'">
-            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Interaktive Übung: KI-SWOT-Analyse</h1>
-            <p class="text-slate-600 mt-2">Reflektieren Sie die Auswirkungen von KI auf Ihren Bereich.</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Dein KI-Kompass Workshop</h1>
+            <p class="mt-2 text-lg text-slate-600">Finde heraus, wo KI dich im Job unterstützen kann.</p>
         </header>
 
-        <!-- Ablauf Section -->
-        <div id="ablauf" class="mb-8 bg-white rounded-xl shadow-md p-6">
-            <h2 class="text-2xl font-bold text-slate-800 mb-4">Ablauf der Übung (30 Minuten)</h2>
-            <div id="accordionContainer" class="space-y-2">
-                <!-- Step 1-4 Accordions here -->
-                <div class="border rounded-lg overflow-hidden">
-                    <button class="accordion-header w-full text-left p-4 bg-slate-50 hover:bg-slate-200 transition font-semibold flex justify-between items-center">
-                        <span>Schritt 1: Gruppenbildung (2 Min)</span>
-                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div class="accordion-content bg-white">
-                        <p>Teilen Sie sich in kleine Gruppen (3-4 Personen) auf. Mischen Sie die Bereiche (bit group, schulungscenter, management etc.), um verschiedene Perspektiven zu erhalten.</p>
+        <!-- Step Indicator -->
+        <div class="flex justify-center items-center mb-8 space-x-2 md:space-x-4">
+            <div id="step-indicator-1" class="step-indicator flex items-center text-sky-600">
+                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold">1</div>
+                <span class="hidden md:block ml-2 font-semibold">Einstieg</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-slate-300"></div>
+            <div id="step-indicator-2" class="step-indicator flex items-center text-slate-400">
+                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-300 flex items-center justify-center font-bold">2</div>
+                <span class="hidden md:block ml-2 font-semibold">Inventur</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-slate-300"></div>
+            <div id="step-indicator-3" class="step-indicator flex items-center text-slate-400">
+                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-300 flex items-center justify-center font-bold">3</div>
+                <span class="hidden md:block ml-2 font-semibold">Matrix</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-slate-300"></div>
+            <div id="step-indicator-4" class="step-indicator flex items-center text-slate-400">
+                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-300 flex items-center justify-center font-bold">4</div>
+                <span class="hidden md:block ml-2 font-semibold">Szenario</span>
+            </div>
+             <div class="flex-1 h-0.5 bg-slate-300"></div>
+            <div id="step-indicator-5" class="step-indicator flex items-center text-slate-400">
+                <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-300 flex items-center justify-center font-bold">5</div>
+                <span class="hidden md:block ml-2 font-semibold">Abschluss</span>
+            </div>
+        </div>
+
+        <main class="bg-white p-6 md:p-8 rounded-2xl shadow-lg">
+            <!-- Step 1: Einstieg -->
+            <div id="step-1" class="step-content active">
+                <h2 class="text-2xl font-bold mb-4">Schritt 1: Die zwei Rollen der KI</h2>
+                <p class="mb-6 text-slate-600">Lass uns zuerst ein gemeinsames Verständnis schaffen. KI kann im Job zwei Hauptrollen einnehmen:</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-slate-100 p-6 rounded-xl">
+                        <h3 class="text-xl font-semibold mb-2">KI als "Autopilot" (Routine)</h3>
+                        <p class="mb-2">Die KI übernimmt eine Aufgabe vollständig und führt sie selbstständig aus. Du kontrollierst nur noch das Ergebnis.</p>
+                        <p class="font-semibold">Ziel: Effizienz steigern, Zeit sparen.</p>
+                        <p class="mt-2 text-sm text-slate-500"><strong>Analogie:</strong> Der Tempomat im Auto.</p>
+                    </div>
+                    <div class="bg-slate-100 p-6 rounded-xl">
+                        <h3 class="text-xl font-semibold mb-2">KI als "Navigator" (Entscheidungshilfe)</h3>
+                        <p class="mb-2">Die KI analysiert Daten, zeigt Muster, macht Vorschläge. Du triffst die endgültige, informierte Entscheidung.</p>
+                        <p class="font-semibold">Ziel: Bessere, datengestützte Entscheidungen.</p>
+                        <p class="mt-2 text-sm text-slate-500"><strong>Analogie:</strong> Das Navi, das dir Routen vorschlägt.</p>
                     </div>
                 </div>
-                <div class="border rounded-lg overflow-hidden">
-                    <button class="accordion-header w-full text-left p-4 bg-slate-50 hover:bg-slate-200 transition font-semibold flex justify-between items-center">
-                        <span>Schritt 2: Einleitung & Analyse (3 Min)</span>
-                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div class="accordion-content bg-white">
-                        <p>Ihre Aufgabe ist es, die Auswirkungen von KI auf Ihren Bereich zu analysieren. Nutzen Sie dafür die vier SWOT-Felder auf dem Board unten. Die Leitfragen helfen Ihnen dabei.</p>
+            </div>
+
+            <!-- Step 2: Aufgaben-Inventur -->
+            <div id="step-2" class="step-content">
+                <h2 class="text-2xl font-bold mb-2">Schritt 2: Deine Aufgaben-Inventur</h2>
+                <p class="mb-4 text-slate-600">Denke an eine typische Arbeitswoche. Welche Aufgaben fallen bei dir regelmäßig an? Trage sie hier ein.</p>
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="task-input" class="flex-grow p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="z.B. Wöchentlichen Report erstellen">
+                    <button id="add-task-btn" class="bg-sky-600 text-white font-bold py-3 px-5 rounded-lg hover:bg-sky-700 transition-colors">Hinzufügen</button>
+                </div>
+                <p class="mb-4 text-slate-600">Sortiere deine Aufgaben nun zu. Klicke die Buttons oder ziehe die Kärtchen in die passende Spalte.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div id="routine-col" class="bg-blue-50/50 p-4 rounded-xl drop-zone border-2 border-dashed border-blue-300">
+                        <h3 class="text-lg font-semibold text-center mb-2 text-blue-800">Routine Aufgaben</h3>
+                        <p class="text-xs text-center text-slate-500 mb-4">(Der "Autopilot")</p>
+                        <div id="routine-tasks" class="space-y-2"></div>
+                    </div>
+                    <div id="decision-col" class="bg-purple-50/50 p-4 rounded-xl drop-zone border-2 border-dashed border-purple-300">
+                        <h3 class="text-lg font-semibold text-center mb-2 text-purple-800">Entscheidungs-Aufgaben</h3>
+                        <p class="text-xs text-center text-slate-500 mb-4">(Der "Navigator")</p>
+                        <div id="decision-tasks" class="space-y-2"></div>
                     </div>
                 </div>
-                <div class="border rounded-lg overflow-hidden">
-                    <button class="accordion-header w-full text-left p-4 bg-slate-50 hover:bg-slate-200 transition font-semibold flex justify-between items-center">
-                        <span>Schritt 3: Brainstorming & Auswahl (15 Min)</span>
-                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div class="accordion-content bg-white">
-                        <p>Diskutieren Sie in der Gruppe und tragen Sie Ihre Ideen in die entsprechenden Felder ein. **Wählen Sie anschließend Ihre wichtigste Chance aus**, indem Sie auf den Stern (☆) klicken, um sie als Top-Chance zu markieren (⭐).</p>
-                        <!-- Timer -->
-                        <div class="mt-4 p-4 bg-slate-100 rounded-lg text-center">
-                            <div id="timerDisplay" class="text-4xl font-bold text-slate-800">15:00</div>
-                            <div class="flex justify-center gap-4 mt-2">
-                                <button id="startTimer" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">Start</button>
-                                <button id="pauseTimer" class="px-4 py-2 bg-slate-500 text-white rounded-lg font-semibold hover:bg-slate-600 transition">Pause</button>
-                                <button id="resetTimer" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg font-semibold hover:bg-slate-300 transition">Reset</button>
-                            </div>
+                 <div id="task-pool" class="mt-4 p-4 border-2 border-dashed rounded-lg drop-zone">
+                    <p class="text-sm text-center text-slate-500">Neue Aufgaben erscheinen hier. Ordne sie den Spalten zu.</p>
+                </div>
+            </div>
+
+            <!-- Step 3: KI-Potenzial-Matrix -->
+            <div id="step-3" class="step-content">
+                <h2 class="text-2xl font-bold mb-2">Schritt 3: Die KI-Potenzial-Matrix</h2>
+                <p class="mb-4 text-slate-600">Priorisiere nun deine Aufgaben. Ziehe die Kärtchen per Drag & Drop in die Matrix. Wo liegt das größte Potenzial?</p>
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <div id="matrix-task-list" class="lg:w-1/4 bg-slate-100 p-4 rounded-xl space-y-2 drop-zone">
+                         <h3 class="font-semibold text-center mb-2">Deine Aufgaben</h3>
+                         <!-- Tasks will be populated here -->
+                    </div>
+                    <div id="matrix-container" class="flex-1 grid grid-cols-2 grid-rows-2 gap-1 bg-slate-200 rounded-xl p-1 relative">
+                        <!-- Axis Labels -->
+                        <div class="absolute -bottom-8 left-0 right-0 text-center font-semibold text-slate-600">Zeitaufwand &rarr;</div>
+                        <div class="absolute -left-24 top-0 bottom-0 flex items-center -rotate-90 font-semibold text-slate-600">Komplexität &rarr;</div>
+                        
+                        <!-- Quadrants -->
+                        <div id="q1" class="drop-zone bg-white rounded-lg p-2 flex flex-wrap gap-1 items-start justify-start relative">
+                            <span class="absolute top-2 left-2 text-xs text-slate-400 w-full">Geringer Aufwand / Hohe Komplexität</span>
+                        </div>
+                        <div id="q2" class="drop-zone bg-white rounded-lg p-2 flex flex-wrap gap-1 items-start justify-start relative">
+                            <span class="absolute top-2 right-2 text-xs text-slate-400 font-bold text-right w-full">Navigator-Zone</span>
+                            <span class="absolute top-7 right-2 text-xs text-slate-400 text-right w-full">Hoher Aufwand / Hohe Komplexität</span>
+                        </div>
+                        <div id="q3" class="drop-zone bg-white rounded-lg p-2 flex flex-wrap gap-1 items-start justify-start relative">
+                            <span class="absolute bottom-2 left-2 text-xs text-slate-400 w-full">Geringer Aufwand / Geringe Komplexität</span>
+                        </div>
+                        <div id="q4" class="drop-zone bg-white rounded-lg p-2 flex flex-wrap gap-1 items-start justify-start relative">
+                             <span class="absolute bottom-2 right-2 text-xs text-slate-400 font-bold text-right w-full">Autopilot-Zone</span>
+                             <span class="absolute bottom-7 right-2 text-xs text-slate-400 text-right w-full">Hoher Aufwand / Geringe Komplexität</span>
                         </div>
                     </div>
                 </div>
-                <div class="border rounded-lg overflow-hidden">
-                    <button class="accordion-header w-full text-left p-4 bg-slate-50 hover:bg-slate-200 transition font-semibold flex justify-between items-center">
-                        <span>Schritt 4: Präsentation (10 Min)</span>
-                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div class="accordion-content bg-white">
-                        <p>Klicken Sie auf "Präsentation starten". Jede Gruppe stellt im Plenum ihre **allerwichtigste, konkreteste Chance** vor, die sie identifiziert hat.</p>
+            </div>
+
+            <!-- Step 4: Vom Heute zum Morgen -->
+            <div id="step-4" class="step-content">
+                 <h2 class="text-2xl font-bold mb-2">Schritt 4: Vom Heute zum Morgen</h2>
+                 <p class="mb-6 text-slate-600">Wähle eine vielversprechende Aufgabe aus der Matrix aus. Entwickle ein konkretes Szenario für den Wandel deiner Arbeit.</p>
+                 <div class="space-y-6">
+                    <div>
+                        <label for="szenario-heute" class="block text-lg font-semibold mb-2">HEUTE: Wie erledigst du diese Aufgabe jetzt?</label>
+                        <textarea id="szenario-heute" rows="4" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500" placeholder="Welche Schritte sind nötig? Welche Tools nutzt du? Wo gibt es Frustration?"></textarea>
+                    </div>
+                     <div>
+                        <label for="szenario-morgen" class="block text-lg font-semibold mb-2">MORGEN mit KI: Wie könnte die Aufgabe mit KI-Unterstützung aussehen?</label>
+                        <textarea id="szenario-morgen" rows="4" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500" placeholder="Was genau würde die KI tun? Welche Informationen würde sie liefern oder welche Aktion würde sie ausführen?"></textarea>
+                    </div>
+                     <div>
+                        <label for="szenario-rolle" class="block text-lg font-semibold mb-2">DEINE NEUE ROLLE: Was machst du dann?</label>
+                        <textarea id="szenario-rolle" rows="4" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500" placeholder="Welcher Teil der Aufgabe verbleibt bei dir? Welche neuen Freiräume oder höherwertigen Aufgaben entstehen dadurch?"></textarea>
+                    </div>
+                 </div>
+            </div>
+            
+            <!-- Step 5: Abschluss -->
+            <div id="step-5" class="step-content">
+                <h2 class="text-2xl font-bold mb-4">Schritt 5: Abschluss</h2>
+                <p class="mb-6 text-slate-600">Super, du hast es fast geschafft! Halte deine finalen Gedanken fest und lade deine Ergebnisse als PDF herunter.</p>
+                <div class="bg-sky-50 border-l-4 border-sky-500 p-6 rounded-r-lg">
+                    <h3 class="text-xl font-semibold mb-4">Deine Reflexion</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="abschluss-erkenntnis" class="block font-semibold mb-1">Was war die größte Überraschung oder wichtigste Erkenntnis für dich heute?</label>
+                            <input type="text" id="abschluss-erkenntnis" class="w-full p-2 border border-slate-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label for="abschluss-schritt" class="block font-semibold mb-1">Was ist ein kleiner, konkreter Schritt, den du nächste Woche tun könntest?</label>
+                            <input type="text" id="abschluss-schritt" class="w-full p-2 border border-slate-300 rounded-lg" placeholder="z.B. ein KI-Tool recherchieren, mit einem Kollegen sprechen...">
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Presentation Button -->
-        <div class="text-center mb-8">
-            <button id="startPresentationBtn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition-all transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:transform-none" disabled>
-                Präsentation starten
-            </button>
-        </div>
-
-        <!-- SWOT Board -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Strengths -->
-            <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg p-4 shadow-sm">
-                <h3 class="text-xl font-bold text-emerald-800">Stärken (Strengths)</h3>
-                <p class="text-sm text-emerald-700 mb-3">Welche unserer bestehenden Stärken werden durch KI noch wertvoller?</p>
-                <textarea id="strengths-input" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500" placeholder="Ihre Idee hier..."></textarea>
-                <button onclick="addSwotItem('strengths')" class="mt-2 w-full bg-emerald-600 text-white p-2 rounded-lg font-semibold hover:bg-emerald-700 transition">Hinzufügen</button>
-                <div id="strengths-list" class="mt-4 space-y-2"></div>
-            </div>
-            <!-- Weaknesses -->
-            <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-4 shadow-sm">
-                <h3 class="text-xl font-bold text-amber-800">Schwächen (Weaknesses)</h3>
-                <p class="text-sm text-amber-700 mb-3">Wo sind wir durch die KI-Entwicklung verwundbar?</p>
-                <textarea id="weaknesses-input" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500" placeholder="Ihre Idee hier..."></textarea>
-                <button onclick="addSwotItem('weaknesses')" class="mt-2 w-full bg-amber-600 text-white p-2 rounded-lg font-semibold hover:bg-amber-700 transition">Hinzufügen</button>
-                <div id="weaknesses-list" class="mt-4 space-y-2"></div>
-            </div>
-            <!-- Opportunities -->
-            <div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg p-4 shadow-sm">
-                <h3 class="text-xl font-bold text-indigo-800">Chancen (Opportunities)</h3>
-                <p class="text-sm text-indigo-700 mb-3">Welche völlig neuen Chancen ergeben sich für unser Geschäftsmodell?</p>
-                <textarea id="opportunities-input" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Ihre Idee hier..."></textarea>
-                <button onclick="addSwotItem('opportunities')" class="mt-2 w-full bg-indigo-600 text-white p-2 rounded-lg font-semibold hover:bg-indigo-700 transition">Hinzufügen</button>
-                <div id="opportunities-list" class="mt-4 space-y-2"></div>
-            </div>
-            <!-- Threats -->
-            <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4 shadow-sm">
-                <h3 class="text-xl font-bold text-red-800">Risiken (Threats)</h3>
-                <p class="text-sm text-red-700 mb-3">Was sind die größten Gefahren, wenn wir nicht handeln?</p>
-                <textarea id="threats-input" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500" placeholder="Ihre Idee hier..."></textarea>
-                <button onclick="addSwotItem('threats')" class="mt-2 w-full bg-red-600 text-white p-2 rounded-lg font-semibold hover:bg-red-700 transition">Hinzufügen</button>
-                <div id="threats-list" class="mt-4 space-y-2"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Presentation Modal -->
-    <div id="presentationModal" class="presentation-modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <header class="p-4 border-b flex justify-between items-center gap-4">
-                <h2 class="text-2xl font-bold text-slate-800">Präsentations-Chart</h2>
-                <div class="flex items-center gap-2">
-                    <button id="downloadPdfBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition disabled:bg-green-300">
-                        Als PDF herunterladen
+                 <div class="mt-8 text-center">
+                    <button id="download-pdf-btn" class="bg-emerald-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-emerald-700 transition-colors">
+                        Ergebnisse als PDF herunterladen
                     </button>
-                    <button id="closePresentationBtn" class="text-slate-500 hover:text-slate-800 text-3xl leading-none">&times;</button>
                 </div>
-            </header>
-            <main class="p-6 overflow-y-auto" id="presentation-content">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div id="presentation-strengths"></div>
-                    <div id="presentation-weaknesses"></div>
-                    <div id="presentation-opportunities"></div>
-                    <div id="presentation-threats"></div>
-                </div>
-            </main>
-        </div>
+            </div>
+
+        </main>
+
+        <!-- Navigation -->
+        <footer class="mt-8 flex justify-between items-center">
+            <button id="prev-btn" class="bg-slate-300 text-slate-800 font-bold py-2 px-6 rounded-lg hover:bg-slate-400 transition-colors disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed">Zurück</button>
+            <button id="next-btn" class="bg-sky-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-sky-700 transition-colors">Weiter</button>
+        </footer>
     </div>
 
-
-<script>
-    // --- Data Store ---
-    const swotData = {
-        strengths: [],
-        weaknesses: [],
-        opportunities: [],
-        threats: []
-    };
-    let keyOpportunityId = null;
-
-    // --- Accordion Logic ---
-    document.querySelectorAll('.accordion-header').forEach(button => {
-        button.addEventListener('click', () => {
-            const accordionContent = button.nextElementSibling;
-            const icon = button.querySelector('svg');
-            const isOpen = accordionContent.classList.contains('open');
-
-            document.querySelectorAll('.accordion-content').forEach(content => {
-                content.classList.remove('open');
-                content.previousElementSibling.querySelector('svg').classList.remove('rotate-180');
-            });
-
-            if (!isOpen) {
-                accordionContent.classList.add('open');
-                icon.classList.add('rotate-180');
-            }
-        });
-    });
-
-    // --- SWOT Board Logic ---
-    function addSwotItem(category) {
-        const input = document.getElementById(`${category}-input`);
-        const text = input.value.trim();
-
-        if (text) {
-            const id = `item-${Date.now()}`;
-            swotData[category].push({ id, text });
-            input.value = '';
-            renderSwotLists();
-            checkPresentationButtonState();
-        }
-    }
-
-    function renderSwotLists() {
-        for (const category in swotData) {
-            const listContainer = document.getElementById(`${category}-list`);
-            listContainer.innerHTML = '';
-            swotData[category].forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'swot-card bg-white p-3 rounded-lg shadow-sm flex justify-between items-center transition-all duration-300';
-                card.dataset.id = item.id;
-
-                const textSpan = document.createElement('span');
-                textSpan.textContent = item.text;
-                textSpan.className = 'flex-grow mr-2';
-                card.appendChild(textSpan);
-
-                if (category === 'opportunities') {
-                    const button = document.createElement('button');
-                    button.onclick = () => setKeyOpportunity(item.id);
-
-                    if (item.id === keyOpportunityId) {
-                        card.classList.add('key-opportunity');
-                        button.textContent = '⭐';
-                        button.title = 'Dies ist die Top-Chance';
-                        button.className = 'ml-2 text-2xl text-amber-400 transform scale-125';
-                    } else {
-                        button.textContent = '☆';
-                        button.title = 'Als Top-Chance markieren';
-                        button.className = 'ml-2 text-2xl text-slate-400 hover:text-amber-400 transition-transform transform hover:scale-125';
-                    }
-                    card.appendChild(button);
-                }
-                listContainer.appendChild(card);
-            });
-        }
-    }
-    
-    function setKeyOpportunity(id) {
-        keyOpportunityId = id;
-        renderSwotLists();
-        checkPresentationButtonState();
-    }
-
-    function checkPresentationButtonState() {
-        const presentationBtn = document.getElementById('startPresentationBtn');
-        presentationBtn.disabled = !keyOpportunityId;
-    }
-
-    // --- Presentation Modal Logic ---
-    const startBtn = document.getElementById('startPresentationBtn');
-    const closeBtn = document.getElementById('closePresentationBtn');
-    const modal = document.getElementById('presentationModal');
-    const downloadBtn = document.getElementById('downloadPdfBtn');
-
-    startBtn.addEventListener('click', () => {
-        renderPresentationChart();
-        modal.classList.remove('hidden');
-    });
-
-    closeBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-    });
-    
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.add('hidden');
-        }
-    });
-
-    function renderPresentationChart() {
-        const containers = {
-            strengths: document.getElementById('presentation-strengths'),
-            weaknesses: document.getElementById('presentation-weaknesses'),
-            opportunities: document.getElementById('presentation-opportunities'),
-            threats: document.getElementById('presentation-threats')
-        };
-        const titles = {
-            strengths: { text: 'Stärken', color: 'emerald' },
-            weaknesses: { text: 'Schwächen', color: 'amber' },
-            opportunities: { text: 'Chancen', color: 'indigo' },
-            threats: { text: 'Risiken', color: 'red' }
-        };
-
-        for (const category in containers) {
-            const container = containers[category];
-            container.innerHTML = '';
-            
-            const title = document.createElement('h3');
-            title.className = `text-2xl font-bold text-${titles[category].color}-800 border-b-2 border-${titles[category].color}-500 pb-2 mb-4`;
-            title.textContent = titles[category].text;
-            container.appendChild(title);
-
-            const list = document.createElement('ul');
-            list.className = 'space-y-3';
-            swotData[category].forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.className = 'bg-slate-100 p-3 rounded-lg shadow-sm transition-all';
-                listItem.textContent = item.text;
-                if (item.id === keyOpportunityId) {
-                    listItem.classList.add('bg-amber-300', 'ring-4', 'ring-amber-500', 'font-bold', 'scale-105');
-                    listItem.innerHTML = `<span class="mr-2">⭐</span> ${item.text}`;
-                }
-                list.appendChild(listItem);
-            });
-            container.appendChild(list);
-        }
-    }
-
-    // --- PDF Download Logic ---
-    async function downloadPdf() {
-        const downloadButton = document.getElementById('downloadPdfBtn');
-        const originalButtonText = downloadButton.innerHTML;
-        downloadButton.innerHTML = 'Wird erstellt...';
-        downloadButton.disabled = true;
-    
+    <script>
+        // Make sure jsPDF is available
         const { jsPDF } = window.jspdf;
-        const contentToCapture = document.getElementById('presentation-content');
-        const logoUrl = 'https://i.imgur.com/PKXYVWW.png';
-        const exerciseTitle = 'KI-SWOT-Analyse - Workshop'; // UPDATED TITLE
-    
-        try {
-            // 1. Create PDF instance
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- STATE MANAGEMENT ---
+            let currentStep = 1;
+            const totalSteps = 5;
+            let draggedTaskId = null;
+
+            // Central state object to hold all user data
+            let workshopState = {
+                tasks: [], // { id, text, classification: 'pool' | 'routine' | 'decision', matrixPosition: null }
+                scenario: { heute: '', morgen: '', rolle: '' },
+                reflection: { erkenntnis: '', schritt: '' }
+            };
+
+            // --- DOM ELEMENTS ---
+            const stepContents = document.querySelectorAll('.step-content');
+            const stepIndicators = document.querySelectorAll('.step-indicator');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const taskInput = document.getElementById('task-input');
+            const addTaskBtn = document.getElementById('add-task-btn');
+            const dropZones = document.querySelectorAll('.drop-zone');
+            const downloadPdfBtn = document.getElementById('download-pdf-btn');
+            
+            // Text inputs for state saving
+            const szenarioHeute = document.getElementById('szenario-heute');
+            const szenarioMorgen = document.getElementById('szenario-morgen');
+            const szenarioRolle = document.getElementById('szenario-rolle');
+            const abschlussErkenntnis = document.getElementById('abschluss-erkenntnis');
+            const abschlussSchritt = document.getElementById('abschluss-schritt');
+
+            // --- NAVIGATION ---
+            
+            const navigateToStep = (stepNumber) => {
+                currentStep = stepNumber;
+                
+                // Show/hide step content
+                stepContents.forEach((step, index) => {
+                    step.classList.toggle('active', (index + 1) === currentStep);
+                });
+
+                // --- UPDATED STEP INDICATOR LOGIC ---
+                stepIndicators.forEach((indicator, index) => {
+                    const circle = indicator.querySelector('div');
+                    const isCurrent = (index + 1) === currentStep;
+                    
+                    indicator.classList.toggle('text-sky-600', isCurrent);
+                    indicator.classList.toggle('text-slate-400', !isCurrent);
+                    
+                    circle.classList.toggle('bg-sky-600', isCurrent);
+                    circle.classList.toggle('text-white', isCurrent);
+                    circle.classList.toggle('bg-slate-300', !isCurrent);
+                });
+
+                // Update navigation buttons
+                prevBtn.disabled = currentStep === 1;
+                nextBtn.classList.toggle('hidden', currentStep === totalSteps);
+
+                // ** CRITICAL: Populate content for the new step **
+                if (currentStep === 3) {
+                    populateMatrixView();
+                }
+            };
+
+            // --- DOM MANIPULATION ---
+
+            const populateStep2View = () => {
+                // Get container elements
+                const taskPool = document.getElementById('task-pool');
+                const routineTasksContainer = document.getElementById('routine-tasks');
+                const decisionTasksContainer = document.getElementById('decision-tasks');
+
+                // Clear existing content
+                taskPool.innerHTML = '<p class="text-sm text-center text-slate-500">Neue Aufgaben erscheinen hier. Ordne sie den Spalten zu.</p>';
+                routineTasksContainer.innerHTML = '';
+                decisionTasksContainer.innerHTML = '';
+                
+                // Re-populate based on state
+                workshopState.tasks.forEach(task => {
+                    const taskEl = createTaskElement(task, 'step2');
+                    if (task.classification === 'pool') taskPool.appendChild(taskEl);
+                    else if (task.classification === 'routine') routineTasksContainer.appendChild(taskEl);
+                    else if (task.classification === 'decision') decisionTasksContainer.appendChild(taskEl);
+                });
+            };
+
+            const populateMatrixView = () => {
+                const matrixTaskList = document.getElementById('matrix-task-list');
+                const matrixContainer = document.getElementById('matrix-container');
+
+                // Clear existing content
+                matrixTaskList.innerHTML = '<h3 class="font-semibold text-center mb-2">Deine Aufgaben</h3>';
+                matrixContainer.querySelectorAll('.drop-zone .task-item').forEach(item => item.remove());
+
+                // Re-populate based on state
+                workshopState.tasks.forEach(task => {
+                    if (task.classification !== 'pool') {
+                        const matrixTaskEl = createTaskElement(task, 'step3');
+                        if (task.matrixPosition) {
+                            const quadrant = document.getElementById(task.matrixPosition);
+                            if (quadrant) quadrant.appendChild(matrixTaskEl);
+                        } else {
+                            matrixTaskList.appendChild(matrixTaskEl);
+                        }
+                    }
+                });
+            };
+
+            const createTaskElement = (task, context) => {
+                const taskEl = document.createElement('div');
+                taskEl.id = `task-${task.id}`;
+                taskEl.className = 'task-item bg-white p-3 rounded-lg shadow border flex justify-between items-center';
+                taskEl.draggable = true;
+
+                if (context === 'step2') {
+                    taskEl.innerHTML = `
+                        <span class="flex-grow">${task.text}</span>
+                        ${task.classification === 'pool' ? `
+                        <div class="task-buttons ml-2 space-x-1">
+                            <button data-action="routine" class="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded hover:bg-blue-300">Routine</button>
+                            <button data-action="decision" class="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded hover:bg-purple-300">Entscheidung</button>
+                        </div>` : ''}
+                    `;
+                    taskEl.querySelector('.task-buttons')?.addEventListener('click', handleClassificationClick);
+                } else if (context === 'step3') {
+                    taskEl.classList.add('task-in-matrix');
+                    let classificationText = task.classification === 'routine' ? 'Routine' : 'Entscheidung';
+                    let classificationClass = task.classification === 'routine' ? 'bg-blue-200 text-blue-800' : 'bg-purple-200 text-purple-800';
+                    taskEl.innerHTML = `
+                        <span class="flex-grow">${task.text}</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${classificationClass}">${classificationText}</span>
+                    `;
+                }
+                
+                taskEl.addEventListener('dragstart', (e) => {
+                    draggedTaskId = task.id;
+                    setTimeout(() => { e.target.style.opacity = '0.5'; }, 0);
+                });
+                taskEl.addEventListener('dragend', (e) => {
+                    draggedTaskId = null;
+                    e.target.style.opacity = '1';
+                });
+                return taskEl;
+            };
+            
+            // --- EVENT HANDLERS ---
+            
+            const handleAddTask = () => {
+                const taskText = taskInput.value.trim();
+                if (taskText) {
+                    workshopState.tasks.push({
+                        id: Date.now(),
+                        text: taskText,
+                        classification: 'pool',
+                        matrixPosition: null
+                    });
+                    taskInput.value = '';
+                    taskInput.focus();
+                    populateStep2View();
+                }
+            };
+
+            const handleClassificationClick = (e) => {
+                if(e.target.tagName === 'BUTTON') {
+                    const action = e.target.dataset.action;
+                    const taskDiv = e.target.closest('.task-item');
+                    const taskId = parseInt(taskDiv.id.split('-').pop());
+                    const task = workshopState.tasks.find(t => t.id === taskId);
+                    if (task) {
+                        task.classification = action;
+                        populateStep2View();
+                    }
+                }
+            };
+
+            const handleDrop = (e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove('drag-over');
+                if (draggedTaskId === null) return;
+
+                const task = workshopState.tasks.find(t => t.id === draggedTaskId);
+                if (!task) return;
+
+                const dropZone = e.currentTarget;
+                const zoneId = dropZone.id;
+
+                if (dropZone.closest('#step-2')) {
+                    if (zoneId === 'routine-col') task.classification = 'routine';
+                    else if (zoneId === 'decision-col') task.classification = 'decision';
+                    else if (zoneId === 'task-pool') task.classification = 'pool';
+                    populateStep2View();
+                } else if (dropZone.closest('#step-3')) {
+                    task.matrixPosition = (zoneId === 'matrix-task-list') ? null : zoneId;
+                    populateMatrixView();
+                }
+            };
+
+            // --- PDF GENERATION (UPDATED) ---
+            const generatePDF = async () => {
+                const doc = new jsPDF();
+                let yPos = 20;
+
+                // --- NEW: Load image and define header function ---
+                const logoUrl = 'https://i.imgur.com/PKXYVWW.png';
+                let logoBase64 = null;
+                try {
+                    const response = await fetch(logoUrl);
+                    const blob = await response.blob();
+                    logoBase64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+                } catch (error) {
+                    console.error("Konnte das Logo nicht laden:", error);
+                }
+
+                const addHeader = () => {
+                    if (logoBase64) {
+                        doc.addImage(logoBase64, 'PNG', 14, 10, 30, 15);
+                    }
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(18);
+                    doc.text("Dein KI-Kompass Workshop", 200, 18, null, null, 'right');
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10);
+                    doc.text(`Erstellt am: ${new Date().toLocaleDateString('de-DE')}`, 200, 24, null, null, 'right');
+                    doc.setDrawColor(200, 200, 200);
+                    doc.line(14, 30, 200, 30);
+                };
+
+                // --- UPDATED PDF STRUCTURE ---
+                const addSectionTitle = (title) => {
+                    if (yPos > 260) { doc.addPage(); addHeader(); yPos = 40; }
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(16);
+                    doc.text(title, 14, yPos);
+                    yPos += 10;
+                };
+                
+                const addWrappedText = (text, options = {}) => {
+                    const { isBold = false, indent = 0 } = options;
+                    doc.setFont('helvetica', isBold ? 'bold' : 'normal');
+                    doc.setFontSize(12);
+                    const splitText = doc.splitTextToSize(text || 'Keine Angabe', 180 - indent);
+                    doc.text(splitText, 14 + indent, yPos);
+                    yPos += (splitText.length * 5) + 6;
+                };
+
+                // --- PAGE 1: TITLE & STEP 1 ---
+                addHeader();
+                yPos = 45;
+                addSectionTitle("Schritt 1: Die zwei Rollen der KI");
+                addWrappedText("KI als \"Autopilot\" (Routine):", { isBold: true });
+                addWrappedText("Die KI übernimmt eine Aufgabe vollständig und führt sie selbstständig aus. Das Ziel ist, Effizienz zu steigern und Zeit zu sparen.", { indent: 5 });
+                yPos += 5;
+                addWrappedText("KI als \"Navigator\" (Entscheidungshilfe):", { isBold: true });
+                addWrappedText("Die KI analysiert Daten, zeigt Muster und macht Vorschläge, um bessere, datengestützte Entscheidungen zu ermöglichen.", { indent: 5 });
+
+                // --- PAGE 2: STEP 2 ---
+                doc.addPage();
+                addHeader();
+                yPos = 40;
+                addSectionTitle("Schritt 2: Deine Aufgaben & Einordnung");
+                
+                const routineTasks = workshopState.tasks.filter(t => t.classification === 'routine').map(t => [t.text]);
+                const decisionTasks = workshopState.tasks.filter(t => t.classification === 'decision').map(t => [t.text]);
+
+                let leftTableFinalY = yPos;
+                if (routineTasks.length > 0) {
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Routine Aufgaben']],
+                        body: routineTasks,
+                        theme: 'striped',
+                        headStyles: { fillColor: [59, 130, 246] }, // Blue
+                        margin: { right: 105 }
+                    });
+                    leftTableFinalY = doc.autoTable.previous.finalY;
+                }
+
+                let rightTableFinalY = yPos;
+                if (decisionTasks.length > 0) {
+                    doc.autoTable({
+                        startY: yPos,
+                        head: [['Entscheidungs-Aufgaben']],
+                        body: decisionTasks,
+                        theme: 'striped',
+                        headStyles: { fillColor: [139, 92, 246] }, // Purple
+                        margin: { left: 105 }
+                    });
+                    rightTableFinalY = doc.autoTable.previous.finalY;
+                }
+                
+                yPos = Math.max(leftTableFinalY, rightTableFinalY) + 15;
+
+                // --- PAGE 3: STEP 3 ---
+                doc.addPage();
+                addHeader();
+                yPos = 40;
+                addSectionTitle("Schritt 3: Deine KI-Potenzial-Matrix");
+                const getTasksForQuadrant = (q) => workshopState.tasks.filter(t => t.matrixPosition === q).map(t => `- ${t.text}`).join('\n');
+                const matrixData = [
+                    [{ content: 'Geringer Aufwand / Hohe Komplexität\n\n' + getTasksForQuadrant('q1'), styles: { minCellHeight: 60, valign: 'top' } }, { content: 'Navigator-Zone (Hoher Aufwand / Hohe Komplexität)\n\n' + getTasksForQuadrant('q2'), styles: { minCellHeight: 60, fontStyle: 'bold', valign: 'top' } }],
+                    [{ content: 'Geringer Aufwand / Geringe Komplexität\n\n' + getTasksForQuadrant('q3'), styles: { minCellHeight: 60, valign: 'top' } }, { content: 'Autopilot-Zone (Hoher Aufwand / Geringe Komplexität)\n\n' + getTasksForQuadrant('q4'), styles: { minCellHeight: 60, fontStyle: 'bold', valign: 'top' } }]
+                ];
+                doc.autoTable({ startY: yPos, body: matrixData, theme: 'grid' });
+
+                // --- PAGE 4: STEP 4 ---
+                doc.addPage();
+                addHeader();
+                yPos = 40;
+                addSectionTitle("Schritt 4: Dein \"Vom Heute zum Morgen\"-Szenario");
+                addWrappedText("HEUTE: Wie erledigst du diese Aufgabe jetzt?", { isBold: true });
+                addWrappedText(workshopState.scenario.heute);
+                addWrappedText("MORGEN mit KI: Wie könnte die Aufgabe aussehen?", { isBold: true });
+                addWrappedText(workshopState.scenario.morgen);
+                addWrappedText("DEINE NEUE ROLLE: Was machst du dann?", { isBold: true });
+                addWrappedText(workshopState.scenario.rolle);
+
+                // --- PAGE 5: STEP 5 ---
+                doc.addPage();
+                addHeader();
+                yPos = 40;
+                addSectionTitle("Schritt 5: Abschluss & Nächste Schritte");
+                addWrappedText("Größte Überraschung/wichtigste Erkenntnis:", { isBold: true });
+                addWrappedText(workshopState.reflection.erkenntnis);
+                addWrappedText("Ein kleiner, konkreter nächster Schritt:", { isBold: true });
+                addWrappedText(workshopState.reflection.schritt);
+
+                doc.save('mein-ki-kompass.pdf');
+            };
+
+            // --- INITIALIZATION & EVENT LISTENERS ---
+            
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 1) {
+                    navigateToStep(currentStep - 1);
+                }
             });
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const margin = 15;
-            let currentY = margin;
 
-            // 2. Add Logo from URL
-            const response = await fetch(logoUrl, { mode: 'cors' }); // Use CORS mode
-            const blob = await response.blob();
-            const logoBase64 = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
+            nextBtn.addEventListener('click', () => {
+                if (currentStep < totalSteps) {
+                    navigateToStep(currentStep + 1);
+                }
             });
             
-            const img = new Image();
-            img.src = logoBase64;
-            await new Promise(resolve => { img.onload = resolve });
-            
-            const logoHeight = 15; 
-            const logoWidth = (img.width * logoHeight) / img.height;
-            const logoX = (pdfWidth - logoWidth) / 2;
-            pdf.addImage(logoBase64, 'PNG', logoX, currentY, logoWidth, logoHeight);
-            currentY += logoHeight + 10;
-
-            // 3. Add Title
-            pdf.setFontSize(20);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setTextColor(44, 62, 80); // Dark slate color
-            pdf.text(exerciseTitle, pdfWidth / 2, currentY, { align: 'center' });
-            currentY += 10;
-
-            // 4. Add Creation Date
-            const today = new Date();
-            const dateString = `Erstellt am: ${today.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
-            pdf.setFontSize(10);
-            pdf.setFont('helvetica', 'normal');
-            pdf.setTextColor(100, 116, 139); // Slate-500 color
-            pdf.text(dateString, pdfWidth - margin, currentY, { align: 'right' });
-            currentY += 10;
-
-            // 5. Add SWOT content from canvas
-            const canvas = await html2canvas(contentToCapture, { 
-                scale: 2,
-                backgroundColor: '#ffffff',
-                useCORS: true 
+            addTaskBtn.addEventListener('click', handleAddTask);
+            taskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleAddTask();
             });
+
+            // Save text inputs to state on change
+            szenarioHeute.addEventListener('input', (e) => workshopState.scenario.heute = e.target.value);
+            szenarioMorgen.addEventListener('input', (e) => workshopState.scenario.morgen = e.target.value);
+            szenarioRolle.addEventListener('input', (e) => workshopState.scenario.rolle = e.target.value);
+            abschlussErkenntnis.addEventListener('input', (e) => workshopState.reflection.erkenntnis = e.target.value);
+            abschlussSchritt.addEventListener('input', (e) => workshopState.reflection.schritt = e.target.value);
             
-            const imgData = canvas.toDataURL('image/png');
-            const canvasRatio = canvas.width / canvas.height;
-            const contentWidth = pdfWidth - (margin * 2);
-            const contentHeight = contentWidth / canvasRatio;
-
-            pdf.addImage(imgData, 'PNG', margin, currentY, contentWidth, contentHeight);
+            downloadPdfBtn.addEventListener('click', generatePDF);
             
-            // 6. Save the PDF
-            pdf.save('KI-SWOT-Analyse.pdf');
+            // Add dragover and drop listeners to all drop zones
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', handleDrop);
+            });
 
-        } catch (error) {
-            console.error("PDF-Erstellung fehlgeschlagen:", error);
-            alert("Entschuldigung, das PDF konnte nicht erstellt werden. Möglicherweise blockiert Ihr Browser das Laden von externen Bildern.");
-        } finally {
-            downloadButton.innerHTML = originalButtonText;
-            downloadButton.disabled = false;
-        }
-    }
-
-    downloadBtn.addEventListener('click', downloadPdf);
-
-
-    // --- Timer Logic ---
-    let timerInterval;
-    let timeInSeconds = 15 * 60; // Adjusted to 15 minutes
-    const timerDisplay = document.getElementById('timerDisplay');
-    const startTimerBtn = document.getElementById('startTimer');
-    const pauseTimerBtn = document.getElementById('pauseTimer');
-    const resetTimerBtn = document.getElementById('resetTimer');
-
-    function updateTimerDisplay() {
-        const minutes = Math.floor(timeInSeconds / 60);
-        const seconds = timeInSeconds % 60;
-        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    function startTimer() {
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if (timeInSeconds > 0) {
-                timeInSeconds--;
-                updateTimerDisplay();
-            } else {
-                clearInterval(timerInterval);
-                timerDisplay.textContent = "Zeit abgelaufen!";
-                timerDisplay.classList.add('text-red-600');
-            }
-        }, 1000);
-    }
-
-    function pauseTimer() {
-        clearInterval(timerInterval);
-    }
-
-    function resetTimer() {
-        clearInterval(timerInterval);
-        timeInSeconds = 15 * 60; // Adjusted to 15 minutes
-        timerDisplay.classList.remove('text-red-600');
-        updateTimerDisplay();
-    }
-
-    startTimerBtn.addEventListener('click', startTimer);
-    pauseTimerBtn.addEventListener('click', pauseTimer);
-    resetTimerBtn.addEventListener('click', resetTimer);
-
-    // Initial setup
-    updateTimerDisplay();
-    checkPresentationButtonState();
-
-</script>
-
+            // Initial render
+            navigateToStep(1);
+        });
+    </script>
 </body>
 </html>

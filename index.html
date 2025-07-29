@@ -6,6 +6,7 @@
     <title>Interaktive Übung: KI-SWOT-Analyse</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- PDF Generation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kDXrdEMJqzUMLcAoទឹកiIA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" xintegrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
@@ -48,12 +49,14 @@
             <p class="text-slate-600 mt-2">Reflektieren Sie die Auswirkungen von KI auf Ihren Bereich.</p>
         </header>
 
+        <!-- Ablauf Section -->
         <div id="ablauf" class="mb-8 bg-white rounded-xl shadow-md p-6">
-            <h2 class="text-2xl font-bold text-slate-800 mb-4">Ablauf der Übung (20 Minuten)</h2>
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">Ablauf der Übung (30 Minuten)</h2>
             <div id="accordionContainer" class="space-y-2">
+                <!-- Step 1-4 Accordions here -->
                 <div class="border rounded-lg overflow-hidden">
                     <button class="accordion-header w-full text-left p-4 bg-slate-50 hover:bg-slate-200 transition font-semibold flex justify-between items-center">
-                        <span>Schritt 1: Gruppenbildung (1 Min)</span>
+                        <span>Schritt 1: Gruppenbildung (2 Min)</span>
                         <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div class="accordion-content bg-white">
@@ -62,7 +65,7 @@
                 </div>
                 <div class="border rounded-lg overflow-hidden">
                     <button class="accordion-header w-full text-left p-4 bg-slate-50 hover:bg-slate-200 transition font-semibold flex justify-between items-center">
-                        <span>Schritt 2: Einleitung & Analyse (2 Min)</span>
+                        <span>Schritt 2: Einleitung & Analyse (3 Min)</span>
                         <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div class="accordion-content bg-white">
@@ -71,13 +74,14 @@
                 </div>
                 <div class="border rounded-lg overflow-hidden">
                     <button class="accordion-header w-full text-left p-4 bg-slate-50 hover:bg-slate-200 transition font-semibold flex justify-between items-center">
-                        <span>Schritt 3: Brainstorming & Auswahl (12 Min)</span>
+                        <span>Schritt 3: Brainstorming & Auswahl (15 Min)</span>
                         <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div class="accordion-content bg-white">
                         <p>Diskutieren Sie in der Gruppe und tragen Sie Ihre Ideen in die entsprechenden Felder ein. **Wählen Sie anschließend Ihre wichtigste Chance aus**, indem Sie auf den Stern (☆) klicken, um sie als Top-Chance zu markieren (⭐).</p>
+                        <!-- Timer -->
                         <div class="mt-4 p-4 bg-slate-100 rounded-lg text-center">
-                            <div id="timerDisplay" class="text-4xl font-bold text-slate-800">12:00</div>
+                            <div id="timerDisplay" class="text-4xl font-bold text-slate-800">15:00</div>
                             <div class="flex justify-center gap-4 mt-2">
                                 <button id="startTimer" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">Start</button>
                                 <button id="pauseTimer" class="px-4 py-2 bg-slate-500 text-white rounded-lg font-semibold hover:bg-slate-600 transition">Pause</button>
@@ -88,7 +92,7 @@
                 </div>
                 <div class="border rounded-lg overflow-hidden">
                     <button class="accordion-header w-full text-left p-4 bg-slate-50 hover:bg-slate-200 transition font-semibold flex justify-between items-center">
-                        <span>Schritt 4: Präsentation (5 Min)</span>
+                        <span>Schritt 4: Präsentation (10 Min)</span>
                         <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div class="accordion-content bg-white">
@@ -98,13 +102,16 @@
             </div>
         </div>
         
+        <!-- Presentation Button -->
         <div class="text-center mb-8">
             <button id="startPresentationBtn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition-all transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:transform-none" disabled>
                 Präsentation starten
             </button>
         </div>
 
+        <!-- SWOT Board -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Strengths -->
             <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded-r-lg p-4 shadow-sm">
                 <h3 class="text-xl font-bold text-emerald-800">Stärken (Strengths)</h3>
                 <p class="text-sm text-emerald-700 mb-3">Welche unserer bestehenden Stärken werden durch KI noch wertvoller?</p>
@@ -112,6 +119,7 @@
                 <button onclick="addSwotItem('strengths')" class="mt-2 w-full bg-emerald-600 text-white p-2 rounded-lg font-semibold hover:bg-emerald-700 transition">Hinzufügen</button>
                 <div id="strengths-list" class="mt-4 space-y-2"></div>
             </div>
+            <!-- Weaknesses -->
             <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-4 shadow-sm">
                 <h3 class="text-xl font-bold text-amber-800">Schwächen (Weaknesses)</h3>
                 <p class="text-sm text-amber-700 mb-3">Wo sind wir durch die KI-Entwicklung verwundbar?</p>
@@ -119,6 +127,7 @@
                 <button onclick="addSwotItem('weaknesses')" class="mt-2 w-full bg-amber-600 text-white p-2 rounded-lg font-semibold hover:bg-amber-700 transition">Hinzufügen</button>
                 <div id="weaknesses-list" class="mt-4 space-y-2"></div>
             </div>
+            <!-- Opportunities -->
             <div class="bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg p-4 shadow-sm">
                 <h3 class="text-xl font-bold text-indigo-800">Chancen (Opportunities)</h3>
                 <p class="text-sm text-indigo-700 mb-3">Welche völlig neuen Chancen ergeben sich für unser Geschäftsmodell?</p>
@@ -126,6 +135,7 @@
                 <button onclick="addSwotItem('opportunities')" class="mt-2 w-full bg-indigo-600 text-white p-2 rounded-lg font-semibold hover:bg-indigo-700 transition">Hinzufügen</button>
                 <div id="opportunities-list" class="mt-4 space-y-2"></div>
             </div>
+            <!-- Threats -->
             <div class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4 shadow-sm">
                 <h3 class="text-xl font-bold text-red-800">Risiken (Threats)</h3>
                 <p class="text-sm text-red-700 mb-3">Was sind die größten Gefahren, wenn wir nicht handeln?</p>
@@ -136,6 +146,7 @@
         </div>
     </div>
 
+    <!-- Presentation Modal -->
     <div id="presentationModal" class="presentation-modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col">
             <header class="p-4 border-b flex justify-between items-center gap-4">
@@ -317,45 +328,76 @@
     
         const { jsPDF } = window.jspdf;
         const contentToCapture = document.getElementById('presentation-content');
+        const logoUrl = 'https://i.imgur.com/PKXYVWW.png';
+        const exerciseTitle = 'KI-SWOT-Analyse - Workshop'; // UPDATED TITLE
     
         try {
-            const canvas = await html2canvas(contentToCapture, { 
-                scale: 2, // Higher scale for better resolution
-                backgroundColor: '#ffffff', // Ensure background is not transparent
-                useCORS: true 
-            });
-            
-            const imgData = canvas.toDataURL('image/png');
+            // 1. Create PDF instance
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
                 format: 'a4'
             });
-
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-            const ratio = canvasWidth / canvasHeight;
+            const margin = 15;
+            let currentY = margin;
 
-            let imgWidth = pdfWidth - 20; // A4 width with 10mm margin on each side
-            let imgHeight = imgWidth / ratio;
+            // 2. Add Logo from URL
+            const response = await fetch(logoUrl, { mode: 'cors' }); // Use CORS mode
+            const blob = await response.blob();
+            const logoBase64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
             
-            // If height is too big for the page, scale by height instead
-            if (imgHeight > pdfHeight - 20) {
-                imgHeight = pdfHeight - 20;
-                imgWidth = imgHeight * ratio;
-            }
+            const img = new Image();
+            img.src = logoBase64;
+            await new Promise(resolve => { img.onload = resolve });
+            
+            const logoHeight = 15; 
+            const logoWidth = (img.width * logoHeight) / img.height;
+            const logoX = (pdfWidth - logoWidth) / 2;
+            pdf.addImage(logoBase64, 'PNG', logoX, currentY, logoWidth, logoHeight);
+            currentY += logoHeight + 10;
 
-            const x = (pdfWidth - imgWidth) / 2; // Center horizontally
-            const y = 10; // 10mm margin from top
+            // 3. Add Title
+            pdf.setFontSize(20);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(44, 62, 80); // Dark slate color
+            pdf.text(exerciseTitle, pdfWidth / 2, currentY, { align: 'center' });
+            currentY += 10;
 
-            pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+            // 4. Add Creation Date
+            const today = new Date();
+            const dateString = `Erstellt am: ${today.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}`;
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(100, 116, 139); // Slate-500 color
+            pdf.text(dateString, pdfWidth - margin, currentY, { align: 'right' });
+            currentY += 10;
+
+            // 5. Add SWOT content from canvas
+            const canvas = await html2canvas(contentToCapture, { 
+                scale: 2,
+                backgroundColor: '#ffffff',
+                useCORS: true 
+            });
+            
+            const imgData = canvas.toDataURL('image/png');
+            const canvasRatio = canvas.width / canvas.height;
+            const contentWidth = pdfWidth - (margin * 2);
+            const contentHeight = contentWidth / canvasRatio;
+
+            pdf.addImage(imgData, 'PNG', margin, currentY, contentWidth, contentHeight);
+            
+            // 6. Save the PDF
             pdf.save('KI-SWOT-Analyse.pdf');
 
         } catch (error) {
             console.error("PDF-Erstellung fehlgeschlagen:", error);
-            alert("Entschuldigung, das PDF konnte nicht erstellt werden.");
+            alert("Entschuldigung, das PDF konnte nicht erstellt werden. Möglicherweise blockiert Ihr Browser das Laden von externen Bildern.");
         } finally {
             downloadButton.innerHTML = originalButtonText;
             downloadButton.disabled = false;
@@ -367,7 +409,7 @@
 
     // --- Timer Logic ---
     let timerInterval;
-    let timeInSeconds = 12 * 60;
+    let timeInSeconds = 15 * 60; // Adjusted to 15 minutes
     const timerDisplay = document.getElementById('timerDisplay');
     const startTimerBtn = document.getElementById('startTimer');
     const pauseTimerBtn = document.getElementById('pauseTimer');
@@ -399,7 +441,7 @@
 
     function resetTimer() {
         clearInterval(timerInterval);
-        timeInSeconds = 12 * 60;
+        timeInSeconds = 15 * 60; // Adjusted to 15 minutes
         timerDisplay.classList.remove('text-red-600');
         updateTimerDisplay();
     }
